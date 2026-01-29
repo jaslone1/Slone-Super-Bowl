@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="My Streamlit App",
+    page_title="Super Bowl 60",
     page_icon="🚀",
     layout="centered"
 )
