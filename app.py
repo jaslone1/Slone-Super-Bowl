@@ -317,13 +317,12 @@ def show_main_app():
 
     # Tab 2: Guest List
     with tab2:
-        st.header("Who's Coming")
-        
+             
         guests = get_attending_guests()
 
         if guests:
             for name, food in guests:
-                st.write(f"**{name}** — {food or 'No food listed'}")
+                st.write(f"**{name}** — {food}")
         else:
             st.write("No RSVPs yet.")
     
