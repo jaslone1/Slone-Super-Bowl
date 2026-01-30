@@ -300,11 +300,16 @@ def show_main_app():
 
         # Predictions Section
         st.header("Game Predictions")
+
+        st.markdown(***
+                    You can always come back and edit this. I'll close is before kickoff
+        ***)
+            
         
         winner_default, points_default, first_play_default, first_commercial_default = get_user_prediction(user_id)
         
         winner = st.selectbox(
-            "Who will win?",
+            "Winner:",
             ["Seahawks", "Patriots"],
             index=["Seahawks", "Patriots"].index(winner_default) if winner_default in ["Seahawks", "Patriots"] else 0
         )
@@ -313,12 +318,6 @@ def show_main_app():
             "Total points scored",
             min_value=0,
             value=points_default
-        )
-
-        first_play = st.selectbox(
-            "What will the first play be?",
-            ["Run", "Pass", "Kick"],
-            index=["Run", "Pass", "Kick"].index(first_play_default) if first_play_default in ["Run", "Pass", "Kick"] else 0
         )
 
         first_commercial = st.text_input(
