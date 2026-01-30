@@ -307,7 +307,7 @@ def show_main_app():
         
         winner_default, points_default, first_commercial_default, halftime_cameo_default = get_user_prediction(user_id)
         
-        winner = st.selectbox(
+        winner = st.radio(
             "Winner:",
             ["Seahawks", "Patriots"],
             index=["Seahawks", "Patriots"].index(winner_default) if winner_default in ["Seahawks", "Patriots"] else 0
