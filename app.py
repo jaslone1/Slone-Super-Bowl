@@ -322,13 +322,13 @@ def show_main_app():
         first_commercial = st.text_input(
             "What company will the first commercial be for?",
             value=first_commercial_default or "",
-            placeholder="e.g., Budweiser, Toyota, Apple..."
+            placeholder="I think last year was Wicked?"
         )
 
         halftime_cameo = st.text_input(
-            "Who will be the halftime show special cameo?",
+            "Who will be the halftime show special appearance?",
             value=halftime_cameo_default or "",
-            placeholder="e.g., Beyoncé, Eminem, Taylor Swift..."
+            placeholder=""
         )
 
         if st.button("Save Predictions"):
