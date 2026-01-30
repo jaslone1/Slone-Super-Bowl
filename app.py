@@ -173,7 +173,7 @@ def reset_user_pin(user_id, new_pin):
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
-    st.title("🏈 Super Bowl Party Sign In")
+    st.title("Super Bowl Party Sign In")
     
     # Selection: Login or RSVP
     choice = st.radio(
@@ -231,7 +231,7 @@ def show_login_page():
 # ---------- MAIN APP ----------
 def show_main_app():
     """Display main app interface for logged-in users."""
-    st.title(f"🎉 Welcome, {st.session_state.user_name}")
+    st.title(f"Welcome, {st.session_state.user_name}")
     
     # Add custom CSS to make tabs sticky
     st.markdown("""
@@ -261,9 +261,9 @@ def show_main_app():
 
     # Create tabs - show Admin tab only for Jared
     if user_name == "Jared":
-        tab1, tab2, tab3 = st.tabs(["📋 My Info", "🍕 Guest List", "🔐 Admin"])
+        tab1, tab2, tab3 = st.tabs(["My Info", "Guest List", "🔐 Admin"])
     else:
-        tab1, tab2 = st.tabs(["📋 My Info", "🍕 Guest List"])
+        tab1, tab2 = st.tabs(["My Info", "Guest List"])
         tab3 = None  # No admin tab for non-Jared users
 
     # Tab 1: RSVP & Predictions
