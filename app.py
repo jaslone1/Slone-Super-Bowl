@@ -193,8 +193,8 @@ def show_login_page():
     
     # Selection: Login or RSVP
     choice = st.radio(
-        "What would you like to do?",
-        ["Login", "RSVP (New Guest)"],
+        "",
+        ["RSVP (New Guest)", "Login"],
         horizontal=True
     )
     
@@ -248,6 +248,12 @@ def show_login_page():
 def show_main_app():
     """Display main app interface for logged-in users."""
     st.title(f"Welcome, {st.session_state.user_name}")
+
+    st.info("""
+    -Kickoff is 5:30
+    -Come over anytime after 3
+    -Address 7613 Galliano Cir
+    )
     
     # Add custom CSS to make tabs sticky
     st.markdown("""
