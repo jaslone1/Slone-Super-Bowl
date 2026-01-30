@@ -90,25 +90,25 @@ def get_user_prediction(user_id):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
-        "SELECT winner, total_points FROM predictions WHERE user_id = ?",
+        "SELECT winner, total_points, first_play, first_commercial FROM predictions WHERE user_id = ?",
         (user_id,)
     )
     row = cur.fetchone()
     conn.close()
     
     if row:
-        return row[0], row[1]
-    return "Chiefs", 40
+        return row[0], row[1], row[2], row[3]
+    return "Chiefs", 40, "Run", "Beer"
 
 
-def save_prediction(user_id, winner, points):
+def save_prediction(user_id, winner, points, first_play, first_commercial):
     """Save user's game prediction."""
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("DELETE FROM predictions WHERE user_id = ?", (user_id,))
     cur.execute(
-        "INSERT INTO predictions (user_id, winner, total_points) VALUES (?, ?, ?)",
-        (user_id, winner, points)
+        "INSERT INTO predictions (user_id, winner, total_points, first_play, first_commercial) VALUES (?, ?, ?, ?, ?)",
+        (user_id, winner, points, first_play, first_commercial)
     )
     conn.commit()
     conn.close()
@@ -181,49 +181,69 @@ def show_main_app():
     
     user_id = st.session_state.user_id
 
-    # RSVP Section
-    st.header("📋 RSVP & Food")
-    
-    attending_default, food_default = get_user_rsvp(user_id)
-    
-    attending = st.checkbox("I am attending", value=attending_default)
-    food = st.text_input("What food are you bringing?", value=food_default)
+    # Create tabs
+    tab1, tab2 = st.tabs(["📋 My Info", "🍕 Guest List"])
 
-    if st.button("Save RSVP"):
-        save_rsvp(user_id, attending, food)
-        st.success("RSVP saved!")
+    # Tab 1: RSVP & Predictions
+    with tab1:
+        # RSVP Section
+        st.header("RSVP & Food")
+        
+        attending_default, food_default = get_user_rsvp(user_id)
+        
+        attending = st.checkbox("I am attending", value=attending_default)
+        food = st.text_input("What food are you bringing?", value=food_default)
 
-    # Predictions Section
-    st.header("🔮 Game Predictions")
-    
-    winner_default, points_default = get_user_prediction(user_id)
-    
-    winner = st.selectbox(
-        "Who will win?",
-        ["Chiefs", "49ers"],
-        index=["Chiefs", "49ers"].index(winner_default)
-    )
+        if st.button("Save RSVP"):
+            save_rsvp(user_id, attending, food)
+            st.success("RSVP saved!")
 
-    points = st.number_input(
-        "Total points scored",
-        min_value=0,
-        value=points_default
-    )
+        st.divider()
 
-    if st.button("Save Prediction"):
-        save_prediction(user_id, winner, points)
-        st.success("Prediction saved!")
+        # Predictions Section
+        st.header("Game Predictions")
+        
+        winner_default, points_default, first_play_default, first_commercial_default = get_user_prediction(user_id)
+        
+        winner = st.selectbox(
+            "Who will win?",
+            ["Chiefs", "49ers"],
+            index=["Chiefs", "49ers"].index(winner_default)
+        )
 
-    # Guest List Section
-    st.header("🍕 Who's Coming")
-    
-    guests = get_attending_guests()
+        points = st.number_input(
+            "Total points scored",
+            min_value=0,
+            value=points_default
+        )
 
-    if guests:
-        for name, food in guests:
-            st.write(f"**{name}** — {food or 'No food listed'}")
-    else:
-        st.write("No RSVPs yet.")
+        first_play = st.selectbox(
+            "What will the first play be?",
+            ["Run", "Pass", "Kick"],
+            index=["Run", "Pass", "Kick"].index(first_play_default) if first_play_default in ["Run", "Pass", "Kick"] else 0
+        )
+
+        first_commercial = st.selectbox(
+            "What will the first commercial be for?",
+            ["Beer", "Car", "Tech", "Food", "Movie", "Other"],
+            index=["Beer", "Car", "Tech", "Food", "Movie", "Other"].index(first_commercial_default) if first_commercial_default in ["Beer", "Car", "Tech", "Food", "Movie", "Other"] else 0
+        )
+
+        if st.button("Save Predictions"):
+            save_prediction(user_id, winner, points, first_play, first_commercial)
+            st.success("Predictions saved!")
+
+    # Tab 2: Guest List
+    with tab2:
+        st.header("Who's Coming")
+        
+        guests = get_attending_guests()
+
+        if guests:
+            for name, food in guests:
+                st.write(f"**{name}** — {food or 'No food listed'}")
+        else:
+            st.write("No RSVPs yet.")
 
     # Logout
     st.divider()
