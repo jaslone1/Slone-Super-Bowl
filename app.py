@@ -151,6 +151,25 @@ def get_all_predictions():
     return predictions
 
 
+def get_all_users():
+    """Fetch all users for admin management."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name, pin FROM users ORDER BY name")
+    users = cur.fetchall()
+    conn.close()
+    return users
+
+
+def reset_user_pin(user_id, new_pin):
+    """Reset a user's PIN."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET pin = ? WHERE id = ?", (new_pin, user_id))
+    conn.commit()
+    conn.close()
+
+
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
@@ -311,23 +330,58 @@ def show_main_app():
     # Tab 3: Admin View (only for Jared)
     if tab3 is not None:
         with tab3:
-            st.header("All Predictions")
+            st.header("Admin Panel")
             
-            predictions = get_all_predictions()
+            # Sub-sections with expanders
+            with st.expander("📊 View All Predictions", expanded=True):
+                predictions = get_all_predictions()
+                
+                if predictions:
+                    for name, winner, points, first_play, first_commercial in predictions:
+                        st.write("---")
+                        st.write(f"**{name}**")
+                        if winner:
+                            st.write(f"- Winner: {winner}")
+                            st.write(f"- Total Points: {points}")
+                            st.write(f"- First Play: {first_play or 'Not set'}")
+                            st.write(f"- First Commercial: {first_commercial or 'Not set'}")
+                        else:
+                            st.write("_No predictions yet_")
+                else:
+                    st.write("No predictions yet.")
             
-            if predictions:
-                for name, winner, points, first_play, first_commercial in predictions:
-                    st.write("---")
-                    st.write(f"**{name}**")
-                    if winner:
-                        st.write(f"- Winner: {winner}")
-                        st.write(f"- Total Points: {points}")
-                        st.write(f"- First Play: {first_play or 'Not set'}")
-                        st.write(f"- First Commercial: {first_commercial or 'Not set'}")
-                    else:
-                        st.write("_No predictions yet_")
-            else:
-                st.write("No predictions yet.")
+            with st.expander("👥 Manage Users"):
+                users = get_all_users()
+                
+                if users:
+                    st.subheader("Reset User PIN")
+                    
+                    user_to_reset = st.selectbox(
+                        "Select user",
+                        [u[1] for u in users],
+                        key="reset_user_select"
+                    )
+                    
+                    new_pin = st.text_input(
+                        "New 3-digit PIN",
+                        max_chars=3,
+                        key="new_pin_input"
+                    )
+                    
+                    if st.button("Reset PIN"):
+                        if new_pin and new_pin.isdigit() and len(new_pin) == 3:
+                            user = next(u for u in users if u[1] == user_to_reset)
+                            reset_user_pin(user[0], new_pin)
+                            st.success(f"PIN reset for {user_to_reset}")
+                        else:
+                            st.error("Enter a valid 3-digit PIN")
+                    
+                    st.divider()
+                    st.subheader("All Users")
+                    for user_id, name, pin in users:
+                        st.write(f"**{name}** - PIN: {pin}")
+                else:
+                    st.write("No users yet.")
 
     # Logout
     st.divider()
