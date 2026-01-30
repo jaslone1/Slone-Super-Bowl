@@ -135,10 +135,26 @@ def get_attending_guests():
     return guests
 
 
+def get_all_predictions():
+    """Fetch all user predictions for admin view."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT users.name, predictions.winner, predictions.total_points, 
+               predictions.first_play, predictions.first_commercial
+        FROM users
+        LEFT JOIN predictions ON users.id = predictions.user_id
+        ORDER BY users.name
+    """)
+    predictions = cur.fetchall()
+    conn.close()
+    return predictions
+
+
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
-    st.title("Super Bowl Party Sign In")
+    st.title("🏈 Super Bowl Party Sign In")
     
     # Selection: Login or RSVP
     choice = st.radio(
@@ -196,12 +212,12 @@ def show_login_page():
 # ---------- MAIN APP ----------
 def show_main_app():
     """Display main app interface for logged-in users."""
-    st.title(f"Welcome, {st.session_state.user_name}")
+    st.title(f"🎉 Welcome, {st.session_state.user_name}")
     
     user_id = st.session_state.user_id
 
     # Create tabs
-    tab1, tab2 = st.tabs(["My Info", "Guest List"])
+    tab1, tab2, tab3 = st.tabs(["📋 My Info", "🍕 Guest List", "🔐 Admin"])
 
     # Tab 1: RSVP & Predictions
     with tab1:
@@ -263,6 +279,34 @@ def show_main_app():
                 st.write(f"**{name}** — {food or 'No food listed'}")
         else:
             st.write("No RSVPs yet.")
+    
+    # Tab 3: Admin View
+    with tab3:
+        st.header("All Predictions")
+        
+        # Simple password protection
+        admin_password = st.text_input("Admin password", type="password", key="admin_pass")
+        
+        if admin_password == "superbowl2025":  # Change this to your desired password
+            st.success("Access granted")
+            
+            predictions = get_all_predictions()
+            
+            if predictions:
+                for name, winner, points, first_play, first_commercial in predictions:
+                    st.write("---")
+                    st.write(f"**{name}**")
+                    if winner:
+                        st.write(f"- Winner: {winner}")
+                        st.write(f"- Total Points: {points}")
+                        st.write(f"- First Play: {first_play or 'Not set'}")
+                        st.write(f"- First Commercial: {first_commercial or 'Not set'}")
+                    else:
+                        st.write("_No predictions yet_")
+            else:
+                st.write("No predictions yet.")
+        elif admin_password:
+            st.error("Incorrect password")
 
     # Logout
     st.divider()
