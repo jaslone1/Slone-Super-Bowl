@@ -250,8 +250,11 @@ def show_main_app():
     st.title(f"Welcome, {st.session_state.user_name}")
 
     st.info("""
+    
     -Kickoff is 5:30
+    
     -Come over anytime after 3
+    
     -Address 7613 Galliano Cir
     """)
     
