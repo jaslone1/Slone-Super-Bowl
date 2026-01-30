@@ -255,7 +255,7 @@ def show_main_app():
     
     -Come over anytime after 3
     
-    -Address 7613 Galliano Cir
+    -Address: 7613 Galliano Cir
     """)
     
     # Add custom CSS to make tabs sticky
