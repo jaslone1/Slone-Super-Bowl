@@ -1,8 +1,3 @@
-st.set_page_config(
-    page_title="Super Bowl 60",
-    page_icon="🚀",
-    layout="centered"
-)
 import streamlit as st
 from db import init_db, get_connection
 
