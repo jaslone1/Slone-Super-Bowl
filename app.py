@@ -189,7 +189,7 @@ def reset_user_pin(user_id, new_pin):
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
-    st.title("🏈 Super Bowl Party Sign In")
+    st.title("Super Bowl Party Sign In")
     
     # Selection: Login or RSVP
     choice = st.radio(
@@ -247,7 +247,7 @@ def show_login_page():
 # ---------- MAIN APP ----------
 def show_main_app():
     """Display main app interface for logged-in users."""
-    st.title(f"🎉 Welcome, {st.session_state.user_name}")
+    st.title(f"Welcome, {st.session_state.user_name}")
     
     # Add custom CSS to make tabs sticky
     st.markdown("""
@@ -279,7 +279,7 @@ def show_main_app():
     if user_name == "Jared":
         tab1, tab2, tab3, tab4 = st.tabs(["📋 My Info", "👥 Guest List", "🍽️ Menu", "🔐 Admin"])
     else:
-        tab1, tab2, tab3 = st.tabs(["📋 My Info", "👥 Guest List", "🍽️ Menu"])
+        tab1, tab2, tab3 = st.tabs(["My preditions and food items", "Guest List", "Menu"])
         tab4 = None  # No admin tab for non-Jared users
 
     # Tab 1: RSVP & Predictions
@@ -290,7 +290,7 @@ def show_main_app():
         attending_default, food_default = get_user_rsvp(user_id)
         
         attending = st.checkbox("I am attending", value=attending_default)
-        food = st.text_input("What food are you bringing?", value=food_default)
+        food = st.text_input("Is there a food you feel like bringing?", value=food_default)
 
         if st.button("Save RSVP"):
             save_rsvp(user_id, attending, food)
@@ -349,9 +349,13 @@ def show_main_app():
         
         # Hardcoded host info section
         st.info("""
-        **🏠 Provided by the hosts:**
+        **Provided by the hosts:**
         
-        We'll be serving wings, sliders, and a variety of drinks. Feel free to bring your favorite dish to share!
+        We'll be doing the mashed potato bar again. I'll probably make something regional for both teams like this:
+        New England: Clam chowder, Dunkin Donuts, and Newport Cigarettes
+        Seattle: Fish, Being Sleepless, and Starbucks.
+        
+        If you feel obligatedto bring anything, sign up in the tab above.
         """)
         
         st.divider()
