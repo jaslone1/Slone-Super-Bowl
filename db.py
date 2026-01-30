@@ -40,6 +40,8 @@ def init_db():
             user_id INTEGER PRIMARY KEY,
             winner TEXT,
             total_points INTEGER,
+            first_play TEXT,
+            first_commercial TEXT,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     """)
