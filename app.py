@@ -302,7 +302,7 @@ def show_main_app():
         st.header("Game Predictions")
 
         st.markdown("""
-        You can always come back and edit this. I'll close it before kickoff.
+        You can always come back and edit this. I'll close it before kickoff. Just make sure to hit the Save button.
         """)
         
         winner_default, points_default, first_commercial_default, halftime_cameo_default = get_user_prediction(user_id)
