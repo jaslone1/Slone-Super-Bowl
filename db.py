@@ -40,19 +40,21 @@ def init_db():
             user_id INTEGER PRIMARY KEY,
             winner TEXT,
             total_points INTEGER,
-            first_play TEXT,
             first_commercial TEXT,
+            halftime_cameo TEXT,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     """)
     
     # Migrate existing predictions table if needed
     try:
-        cur.execute("SELECT first_play FROM predictions LIMIT 1")
+        cur.execute("SELECT halftime_cameo FROM predictions LIMIT 1")
     except sqlite3.OperationalError:
-        # Columns don't exist, add them
-        cur.execute("ALTER TABLE predictions ADD COLUMN first_play TEXT")
-        cur.execute("ALTER TABLE predictions ADD COLUMN first_commercial TEXT")
+        # Column doesn't exist, add it
+        cur.execute("ALTER TABLE predictions ADD COLUMN halftime_cameo TEXT")
+    
+    # Remove first_play column if it exists (SQLite doesn't support DROP COLUMN easily)
+    # So we'll just leave it if it exists - it won't cause issues
     
     conn.commit()
     conn.close()
