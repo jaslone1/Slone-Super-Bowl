@@ -349,11 +349,11 @@ def show_main_app():
         
         # Hardcoded host info section
         st.info("""
-        **Provided by the hosts:**
+        **From Daddy himself:**
         
-        We'll be doing the mashed potato bar again. I'll probably make something regional for both teams like this:
-        New England: Clam chowder, Dunkin Donuts, and Newport Cigarettes
-        Seattle: Fish, Being Sleepless, and Starbucks.
+        We'll be doing the mashed potato bar again. I'll probably make something regional for both teams like this:<br>
+        New England: Clam chowder, Dunkin Donuts, and Newport Cigarettes<br>
+        Seattle: Fish, Being Sleepless, and Starbucks.<br>
         
         If you feel obligatedto bring anything, sign up in the tab above.
         """)
