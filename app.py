@@ -214,10 +214,38 @@ def show_main_app():
     """Display main app interface for logged-in users."""
     st.title(f"🎉 Welcome, {st.session_state.user_name}")
     
+    # Add custom CSS to make tabs sticky
+    st.markdown("""
+        <style>
+        /* Make tabs sticky at top */
+        .stTabs [data-baseweb="tab-list"] {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 999;
+            padding: 10px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .stTabs [data-baseweb="tab-list"] {
+                background-color: #0e1117;
+                border-bottom: 2px solid #262730;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     user_id = st.session_state.user_id
+    user_name = st.session_state.user_name
 
-    # Create tabs
-    tab1, tab2, tab3 = st.tabs(["📋 My Info", "🍕 Guest List", "🔐 Admin"])
+    # Create tabs - show Admin tab only for Jared
+    if user_name == "Jared":
+        tab1, tab2, tab3 = st.tabs(["📋 My Info", "🍕 Guest List", "🔐 Admin"])
+    else:
+        tab1, tab2 = st.tabs(["📋 My Info", "🍕 Guest List"])
+        tab3 = None  # No admin tab for non-Jared users
 
     # Tab 1: RSVP & Predictions
     with tab1:
@@ -280,15 +308,10 @@ def show_main_app():
         else:
             st.write("No RSVPs yet.")
     
-    # Tab 3: Admin View
-    with tab3:
-        st.header("All Predictions")
-        
-        # Simple password protection
-        admin_password = st.text_input("Admin password", type="password", key="admin_pass")
-        
-        if admin_password == "superbowl2025":  # Change this to your desired password
-            st.success("Access granted")
+    # Tab 3: Admin View (only for Jared)
+    if tab3 is not None:
+        with tab3:
+            st.header("All Predictions")
             
             predictions = get_all_predictions()
             
@@ -305,8 +328,6 @@ def show_main_app():
                         st.write("_No predictions yet_")
             else:
                 st.write("No predictions yet.")
-        elif admin_password:
-            st.error("Incorrect password")
 
     # Logout
     st.divider()
