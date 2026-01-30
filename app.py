@@ -98,7 +98,7 @@ def get_user_prediction(user_id):
     
     if row:
         return row[0], row[1], row[2], row[3]
-    return "Chiefs", 40, "Run", "Beer"
+    return "Seahawks", 40, "Run", ""
 
 
 def save_prediction(user_id, winner, points, first_play, first_commercial):
@@ -207,8 +207,8 @@ def show_main_app():
         
         winner = st.selectbox(
             "Who will win?",
-            ["Chiefs", "49ers"],
-            index=["Chiefs", "49ers"].index(winner_default)
+            ["Seahawks", "Patriots"],
+            index=["Seahawks", "Patriots"].index(winner_default) if winner_default in ["Seahawks", "Patriots"] else 0
         )
 
         points = st.number_input(
@@ -223,10 +223,10 @@ def show_main_app():
             index=["Run", "Pass", "Kick"].index(first_play_default) if first_play_default in ["Run", "Pass", "Kick"] else 0
         )
 
-        first_commercial = st.selectbox(
-            "What will the first commercial be for?",
-            ["Beer", "Car", "Tech", "Food", "Movie", "Other"],
-            index=["Beer", "Car", "Tech", "Food", "Movie", "Other"].index(first_commercial_default) if first_commercial_default in ["Beer", "Car", "Tech", "Food", "Movie", "Other"] else 0
+        first_commercial = st.text_input(
+            "What company will the first commercial be for?",
+            value=first_commercial_default or "",
+            placeholder="e.g., Budweiser, Toyota, Apple..."
         )
 
         if st.button("Save Predictions"):
