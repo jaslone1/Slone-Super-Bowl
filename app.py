@@ -69,7 +69,7 @@ def get_user_rsvp(user_id):
     
     if row:
         return bool(row[0]), row[1]
-    return False, ""
+    return True, ""
 
 
 def save_rsvp(user_id, attending, food):
