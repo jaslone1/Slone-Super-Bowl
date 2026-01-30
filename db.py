@@ -46,5 +46,13 @@ def init_db():
         )
     """)
     
+    # Migrate existing predictions table if needed
+    try:
+        cur.execute("SELECT first_play FROM predictions LIMIT 1")
+    except sqlite3.OperationalError:
+        # Columns don't exist, add them
+        cur.execute("ALTER TABLE predictions ADD COLUMN first_play TEXT")
+        cur.execute("ALTER TABLE predictions ADD COLUMN first_commercial TEXT")
+    
     conn.commit()
     conn.close()
