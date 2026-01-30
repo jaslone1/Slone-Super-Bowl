@@ -90,7 +90,7 @@ def get_user_prediction(user_id):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
-        "SELECT winner, total_points, first_play, first_commercial FROM predictions WHERE user_id = ?",
+        "SELECT winner, total_points, first_commercial, halftime_cameo FROM predictions WHERE user_id = ?",
         (user_id,)
     )
     row = cur.fetchone()
@@ -100,20 +100,20 @@ def get_user_prediction(user_id):
         return (
             row[0] or "Seahawks",
             row[1] or 40,
-            row[2] or "Run",
+            row[2] or "",
             row[3] or ""
         )
-    return "Seahawks", 40, "Run", ""
+    return "Seahawks", 40, "", ""
 
 
-def save_prediction(user_id, winner, points, first_play, first_commercial):
+def save_prediction(user_id, winner, points, first_commercial, halftime_cameo):
     """Save user's game prediction."""
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("DELETE FROM predictions WHERE user_id = ?", (user_id,))
     cur.execute(
-        "INSERT INTO predictions (user_id, winner, total_points, first_play, first_commercial) VALUES (?, ?, ?, ?, ?)",
-        (user_id, winner, points, first_play, first_commercial)
+        "INSERT INTO predictions (user_id, winner, total_points, first_commercial, halftime_cameo) VALUES (?, ?, ?, ?, ?)",
+        (user_id, winner, points, first_commercial, halftime_cameo)
     )
     conn.commit()
     conn.close()
@@ -157,7 +157,7 @@ def get_all_predictions():
     cur = conn.cursor()
     cur.execute("""
         SELECT users.name, predictions.winner, predictions.total_points, 
-               predictions.first_play, predictions.first_commercial
+               predictions.first_commercial, predictions.halftime_cameo
         FROM users
         LEFT JOIN predictions ON users.id = predictions.user_id
         ORDER BY users.name
@@ -279,7 +279,7 @@ def show_main_app():
     if user_name == "Jared":
         tab1, tab2, tab3, tab4 = st.tabs(["📋 My Info", "👥 Guest List", "🍽️ Menu", "🔐 Admin"])
     else:
-        tab1, tab2, tab3 = st.tabs(["My preditions and food items", "Guest List", "Menu"])
+        tab1, tab2, tab3 = st.tabs(["My predictions and food items", "Guest List", "Menu"])
         tab4 = None  # No admin tab for non-Jared users
 
     # Tab 1: RSVP & Predictions
@@ -301,12 +301,11 @@ def show_main_app():
         # Predictions Section
         st.header("Game Predictions")
 
-        st.markdown(***
-                    You can always come back and edit this. I'll close is before kickoff
-        ***)
-            
+        st.markdown("""
+        You can always come back and edit this. I'll close it before kickoff.
+        """)
         
-        winner_default, points_default, first_play_default, first_commercial_default = get_user_prediction(user_id)
+        winner_default, points_default, first_commercial_default, halftime_cameo_default = get_user_prediction(user_id)
         
         winner = st.selectbox(
             "Winner:",
@@ -326,8 +325,14 @@ def show_main_app():
             placeholder="e.g., Budweiser, Toyota, Apple..."
         )
 
+        halftime_cameo = st.text_input(
+            "Who will be the halftime show special cameo?",
+            value=halftime_cameo_default or "",
+            placeholder="e.g., Beyoncé, Eminem, Taylor Swift..."
+        )
+
         if st.button("Save Predictions"):
-            save_prediction(user_id, winner, points, first_play, first_commercial)
+            save_prediction(user_id, winner, points, first_commercial, halftime_cameo)
             st.success("Predictions saved!")
 
     # Tab 2: Guest List
@@ -380,14 +385,14 @@ def show_main_app():
                 predictions = get_all_predictions()
                 
                 if predictions:
-                    for name, winner, points, first_play, first_commercial in predictions:
+                    for name, winner, points, first_commercial, halftime_cameo in predictions:
                         st.write("---")
                         st.write(f"**{name}**")
                         if winner:
                             st.write(f"- Winner: {winner}")
                             st.write(f"- Total Points: {points}")
-                            st.write(f"- First Play: {first_play or 'Not set'}")
                             st.write(f"- First Commercial: {first_commercial or 'Not set'}")
+                            st.write(f"- Halftime Cameo: {halftime_cameo or 'Not set'}")
                         else:
                             st.write("_No predictions yet_")
                 else:
