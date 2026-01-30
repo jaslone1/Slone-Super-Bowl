@@ -348,14 +348,15 @@ def show_main_app():
         st.header("Party Menu")
         
         # Hardcoded host info section
-        st.info("""
+        st.markdown("""
         **From Daddy himself:**
-        
-        We'll be doing the mashed potato bar again. I'll probably make something regional for both teams like this:<br>
-        New England: Clam chowder, Dunkin Donuts, and Newport Cigarettes<br>
-        Seattle: Fish, Being Sleepless, and Starbucks.<br>
-        
-        If you feel obligatedto bring anything, sign up in the tab above.
+
+        We'll be doing the mashed potato bar again. I'll probably make something regional for both teams like this:
+
+        - **New England:** Clam chowder, Dunkin Donuts, and Newport Cigarettes
+        - **Seattle:** Fish, Being Sleepless, and Starbucks
+
+        If you feel obligated to bring anything, sign up in the tab above.
         """)
         
         st.divider()
