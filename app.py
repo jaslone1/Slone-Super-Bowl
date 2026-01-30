@@ -253,7 +253,7 @@ def show_main_app():
     -Kickoff is 5:30
     -Come over anytime after 3
     -Address 7613 Galliano Cir
-    )
+    """)
     
     # Add custom CSS to make tabs sticky
     st.markdown("""
