@@ -138,7 +138,7 @@ def get_attending_guests():
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
-    st.title("🏈 Super Bowl Party Sign In")
+    st.title("Super Bowl Party Sign In")
     
     # Selection: Login or RSVP
     choice = st.radio(
@@ -196,12 +196,12 @@ def show_login_page():
 # ---------- MAIN APP ----------
 def show_main_app():
     """Display main app interface for logged-in users."""
-    st.title(f"🎉 Welcome, {st.session_state.user_name}")
+    st.title(f"Welcome, {st.session_state.user_name}")
     
     user_id = st.session_state.user_id
 
     # Create tabs
-    tab1, tab2 = st.tabs(["📋 My Info", "🍕 Guest List"])
+    tab1, tab2 = st.tabs(["My Info", "Guest List"])
 
     # Tab 1: RSVP & Predictions
     with tab1:
