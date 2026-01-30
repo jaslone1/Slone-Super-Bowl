@@ -97,7 +97,12 @@ def get_user_prediction(user_id):
     conn.close()
     
     if row:
-        return row[0], row[1], row[2], row[3]
+        return (
+            row[0] or "Seahawks",
+            row[1] or 40,
+            row[2] or "Run",
+            row[3] or ""
+        )
     return "Seahawks", 40, "Run", ""
 
 
@@ -135,43 +140,57 @@ def show_login_page():
     """Display login and registration interface."""
     st.title("🏈 Super Bowl Party Sign In")
     
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id, name, pin FROM users ORDER BY name")
-    users = cur.fetchall()
-    conn.close()
-
-    # Returning guest login
-    if users:
-        st.subheader("Returning guest")
-        selected = st.selectbox(
-            "Select your name",
-            ["-- select --"] + [u[1] for u in users]
-        )
-
-        if selected != "-- select --":
-            pin = st.text_input("3-digit code", type="password", key="login_pin")
-
-            if st.button("Sign in"):
-                if authenticate_user(selected, pin):
-                    st.rerun()
-                else:
-                    st.error("Wrong code")
-
+    # Selection: Login or RSVP
+    choice = st.radio(
+        "What would you like to do?",
+        ["Login", "RSVP (New Guest)"],
+        horizontal=True
+    )
+    
     st.divider()
-
-    # New guest registration
-    st.subheader("New guest")
-    name = st.text_input("Your name")
-    pin = st.text_input("Choose a 3-digit code", max_chars=3, key="register_pin")
-
-    if st.button("Create profile"):
-        success, message = create_user(name, pin)
-        if success:
-            st.success(message)
-            st.rerun()
+    
+    if choice == "Login":
+        # Returning guest login
+        st.subheader("Welcome back!")
+        
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, pin FROM users ORDER BY name")
+        users = cur.fetchall()
+        conn.close()
+        
+        if not users:
+            st.info("No users yet. Select 'RSVP (New Guest)' above to create your profile.")
         else:
-            st.error(message)
+            selected = st.selectbox(
+                "Select your name",
+                ["-- select --"] + [u[1] for u in users]
+            )
+
+            if selected != "-- select --":
+                pin = st.text_input("3-digit code", type="password", key="login_pin")
+
+                if st.button("Sign in"):
+                    if authenticate_user(selected, pin):
+                        st.rerun()
+                    else:
+                        st.error("Wrong code")
+    
+    else:  # RSVP (New Guest)
+        st.subheader("Create your profile")
+        
+        name = st.text_input("Your name")
+        pin = st.text_input("Choose a 3-digit code", max_chars=3, key="register_pin")
+
+        if st.button("Create profile"):
+            success, message = create_user(name, pin)
+            if success:
+                st.success(message)
+                # Automatically log them in
+                if authenticate_user(name, pin):
+                    st.rerun()
+            else:
+                st.error(message)
 
 
 # ---------- MAIN APP ----------
