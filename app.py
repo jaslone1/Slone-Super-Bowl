@@ -124,7 +124,7 @@ def get_attending_guests():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT users.name, rsvp.food
+        SELECT users.name
         FROM users
         JOIN rsvp ON users.id = rsvp.user_id
         WHERE rsvp.attending = 1
@@ -133,6 +133,22 @@ def get_attending_guests():
     guests = cur.fetchall()
     conn.close()
     return guests
+
+
+def get_menu_items():
+    """Fetch all food items being brought."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT users.name, rsvp.food
+        FROM users
+        JOIN rsvp ON users.id = rsvp.user_id
+        WHERE rsvp.attending = 1 AND rsvp.food != ''
+        ORDER BY users.name
+    """)
+    menu = cur.fetchall()
+    conn.close()
+    return menu
 
 
 def get_all_predictions():
@@ -173,7 +189,7 @@ def reset_user_pin(user_id, new_pin):
 # ---------- LOGIN PAGE ----------
 def show_login_page():
     """Display login and registration interface."""
-    st.title("Super Bowl Party Sign In")
+    st.title("🏈 Super Bowl Party Sign In")
     
     # Selection: Login or RSVP
     choice = st.radio(
@@ -231,7 +247,7 @@ def show_login_page():
 # ---------- MAIN APP ----------
 def show_main_app():
     """Display main app interface for logged-in users."""
-    st.title(f"Welcome, {st.session_state.user_name}")
+    st.title(f"🎉 Welcome, {st.session_state.user_name}")
     
     # Add custom CSS to make tabs sticky
     st.markdown("""
@@ -261,10 +277,10 @@ def show_main_app():
 
     # Create tabs - show Admin tab only for Jared
     if user_name == "Jared":
-        tab1, tab2, tab3 = st.tabs(["My Info", "Guest List", "🔐 Admin"])
+        tab1, tab2, tab3, tab4 = st.tabs(["📋 My Info", "👥 Guest List", "🍽️ Menu", "🔐 Admin"])
     else:
-        tab1, tab2 = st.tabs(["My Info", "Guest List"])
-        tab3 = None  # No admin tab for non-Jared users
+        tab1, tab2, tab3 = st.tabs(["📋 My Info", "👥 Guest List", "🍽️ Menu"])
+        tab4 = None  # No admin tab for non-Jared users
 
     # Tab 1: RSVP & Predictions
     with tab1:
@@ -317,18 +333,42 @@ def show_main_app():
 
     # Tab 2: Guest List
     with tab2:
-             
+        st.header("Who's Coming")
+        
         guests = get_attending_guests()
 
         if guests:
-            for name, food in guests:
-                st.write(f"**{name}** — {food}")
+            for (name,) in guests:
+                st.write(f"• {name}")
         else:
             st.write("No RSVPs yet.")
     
-    # Tab 3: Admin View (only for Jared)
-    if tab3 is not None:
-        with tab3:
+    # Tab 3: Menu
+    with tab3:
+        st.header("Party Menu")
+        
+        # Hardcoded host info section
+        st.info("""
+        **🏠 Provided by the hosts:**
+        
+        We'll be serving wings, sliders, and a variety of drinks. Feel free to bring your favorite dish to share!
+        """)
+        
+        st.divider()
+        
+        st.subheader("What Guests Are Bringing")
+        
+        menu_items = get_menu_items()
+
+        if menu_items:
+            for name, food in menu_items:
+                st.write(f"**{name}:** {food}")
+        else:
+            st.write("No food items listed yet.")
+    
+    # Tab 4: Admin View (only for Jared)
+    if tab4 is not None:
+        with tab4:
             st.header("Admin Panel")
             
             # Sub-sections with expanders
